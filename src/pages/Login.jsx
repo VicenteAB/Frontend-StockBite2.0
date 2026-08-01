@@ -42,7 +42,6 @@ export default function Login() {
                         type="password" placeholder="********" className="p-1 border border-white bg-transparent text-white rounded focus:outline-none">
                     </input>
                     
-
                     <button type="submit" className="cursor-pointer bg-white text-orange-500 font-bold py-2 px-4 rounded hover:bg-gray-200">
                         Ingresar
                     </button>
