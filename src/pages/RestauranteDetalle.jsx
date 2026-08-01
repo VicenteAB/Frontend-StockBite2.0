@@ -13,7 +13,19 @@ export default function RestauranteDetalle({}) {
         obtenerInsumosPorRestaurante(id).then(data => setInsumosPorRestaurante(data))
         obtenerRestaurantePorId(id).then(data => setRestaurante(data))
     }, [])
-    
+
+    const obtenerColorAlerta = (stockActual, stockMaximo) => {
+
+        const porcentaje = (stockActual / stockMaximo) * 100;
+
+        if (porcentaje >= 50) {
+            return "bg-green-500"
+        }else if (porcentaje >= 30) {
+            return "bg-yellow-500"
+        }else{
+            return "bg-red-500"
+        }
+    }
 
     return (
         <div>
@@ -25,7 +37,9 @@ export default function RestauranteDetalle({}) {
                         <tr className="divide-x divide-white/30">
                             <th className="px-6 pb-2">Nombre insumo</th>
                             <th className="px-6 pb-2">Stock actual (gramos)</th>
-                            <th className="px-6 pb-2">Stock mínimo aceptable</th>
+                            <th className="px-6 pb-2">Stock mínimo aceptable (gramos)</th>
+                            <th className="px-6 pb-2">Stock máximo (gramos)</th>
+                            <th className="px-6 pb-2">Estado</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-white/30">
@@ -34,6 +48,12 @@ export default function RestauranteDetalle({}) {
                                 <td className="px-6 py-2">{ir.nombre}</td>
                                 <td className="px-6 py-2">{ir.stockActual}</td>
                                 <td className="px-6 py-2">{ir.stockMinimo}</td>
+                                <td className="px-6 py-2">{ir.stockMaximo}</td>
+                                <td className="text-center">
+                                    <span className={`${obtenerColorAlerta(ir.stockActual, ir.stockMaximo)} px-3 rounded-full border-2 border-white/50`}>
+                                        
+                                    </span>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
