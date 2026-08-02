@@ -6,21 +6,28 @@ export default function Login() {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMensaje, setErrorMensaje] = useState('');
 
     const navigate = useNavigate()
         
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        const token = await login(username, password)
-        localStorage.setItem('token', token)
+        try {
+            const token = await login(username, password)
+            localStorage.setItem('token', token)
 
-        console.log('Token:', token) // Imprimir el token en la consola
-        navigate('/home') // redirigir a la pagin principal
+            console.log('Token:', token) // Imprimir el token en la consola
+            navigate('/home') // redirigir a la pagin principal
+        }catch (error) {
+            setErrorMensaje('Usuario o contraseña incorrectos.')
+        }
+
+        
     }
 
     return(
-        <div className="min-h-screen flex justify-center items-center">
+        <div className="min-h-screen flex flex-col justify-center items-center">
             <div className="bg-gradient-to-r from-orange-500 to-red-600 p-8 rounded-lg shadow-lg w-96 ">
                 <h1 className="text-center text-xl text-white font-bold">
                     Iniciar Sesión
@@ -46,7 +53,12 @@ export default function Login() {
                         Ingresar
                     </button>
                 </form>
+                
             </div>
+            <div className="h-12 mt-4">
+                {errorMensaje && <div className="text-lg text-orange-500 border-orange-500 border-2 rounded p-2 mt-5">{errorMensaje}</div>}
+            </div>
+            
         </div>
         
     )
