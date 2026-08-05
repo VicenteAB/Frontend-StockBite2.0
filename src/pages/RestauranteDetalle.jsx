@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { obtenerInsumosPorRestaurante, obtenerRestaurantePorId } from "../services/restauranteDetalleService"
-import { guardarInsumoEnRestaurante } from "../services/insumoService"
+import { guardarInsumoEnRestaurante, eliminarInsumo } from "../services/insumoService"
 
 
 export default function RestauranteDetalle({}) {
@@ -16,6 +16,9 @@ export default function RestauranteDetalle({}) {
     const [cantidadInsumo, setCantidadInsumo] = useState(0);
     const [stockMinimo, setStockMinimo] = useState(0);
     const [stockMaximo, setStockMaximo] = useState(0);
+    //Para mostrar modal al eliminar insumo
+    const [mostrarModalEliminar, setMostrarEliminarModal] = useState(false);
+    const [idInsumoAEliminar, setIdInsumoAEliminar] = useState(null);
     
     useEffect(() => {
         obtenerInsumosPorRestaurante(id).then(data => setInsumosPorRestaurante(data))
@@ -40,11 +43,29 @@ export default function RestauranteDetalle({}) {
         console.log(mostrarModal);
     } 
 
+    const handleEliminarInsumo = async (insumoId) => {
+        if (!insumoId) return;
+
+        try {
+            await eliminarInsumo(insumoId);
+            setMostrarEliminarModal(false);
+            setIdInsumoAEliminar(null); // Limpias el ID almacenado
+            
+            // id aquí corresponde al id del restaurante desde useParams()
+            obtenerInsumosPorRestaurante(id).then(data => setInsumosPorRestaurante(data));
+            console.log('Insumo eliminado correctamente');
+        } catch (error) {
+            console.error('Error al eliminar el insumo:', error);
+        }
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
 
         try{
             await guardarInsumoEnRestaurante(id, nombreInsumo, cantidadInsumo, stockMinimo, stockMaximo)
+            // Actualiza la lista de insumos
+            obtenerInsumosPorRestaurante(id).then(data => setInsumosPorRestaurante(data))
             setMostrarModal(false);
             console.log('Insumo guardado correctamente');
 
@@ -62,6 +83,7 @@ export default function RestauranteDetalle({}) {
                     <button onClick={handleMostrarModal} className="cursor-pointer p-2 flex pl-6 mb-10 border-2 rounded w-1/6 justify-center">Agregar insumo</button>
                 </div>
 
+                {/* Modal para agregar insumo (formulario) */}
                 {mostrarModal && (
                     <div className="fixed inset-0 bg-black/50 flex justify-center items-center ">
                         <div className=" bg-white rounded-lg p-8 w-96 bg-gradient-to-r from-orange-500 to-red-600 rounded">
@@ -120,6 +142,7 @@ export default function RestauranteDetalle({}) {
                     </div>
                 )}
 
+                {/* Tabla de insumos */}
                 <table className="w-full">
                     <thead className="border-b-2 border-white">
                         <tr className="divide-x divide-white/30">
@@ -143,10 +166,40 @@ export default function RestauranteDetalle({}) {
                                         
                                     </span>
                                 </td>
+                                <td className="flex justify-center px-6 py-2 gap-3">
+                                    <button className="border-2 rounded pl-2 pr-2 cursor-pointer text-white-500">
+                                        Actualizar
+                                    </button>
+                                    <button onClick={() => {
+                                        setIdInsumoAEliminar(ir.id);
+                                        setMostrarEliminarModal(true);
+                                        }} className="border-2 rounded pl-2 pr-2 cursor-pointer text-white-500">
+                                            Eliminar
+                                    </button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
+                {mostrarModalEliminar && (
+                    <div className="fixed inset-0 bg-black/50 flex justify-center items-center ">
+                        <div className=" bg-white rounded-lg p-8 w-96 bg-gradient-to-r from-orange-500 to-red-600 rounded">
+                            <h2 className="text-center mb-6 text-xl">¿Esta seguro de eliminar este insumo?</h2>
+                            <div className="flex justify-center gap-3 mt-4">
+                                <button 
+                                    type="submit" 
+                                    onClick={() => handleEliminarInsumo(idInsumoAEliminar)} 
+                                    className="cursor-pointer border-2 rounded pr-5 pl-5"
+                                >
+                                    Si
+                                </button>
+                                <button onClick={() => setMostrarEliminarModal(false)} className="cursor-pointer border-2 rounded pr-5 pl-5">
+                                    No
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     )

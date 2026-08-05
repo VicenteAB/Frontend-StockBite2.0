@@ -20,3 +20,16 @@ export const guardarInsumoEnRestaurante = async (id, nombreInsumo, cantidadInsum
 
     return response.data
 }   
+
+export const eliminarInsumo = async(id)=>{
+
+    const token = localStorage.getItem('token');
+
+    const response = await axios.delete(`${API_URL}/insumos/${id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+
+    return response.data
+}
