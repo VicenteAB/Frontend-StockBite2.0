@@ -35,8 +35,9 @@ export const eliminarInsumo = async(id)=>{
 }
 
 export const actualizarInsumo = async(id, nombreInsumo, cantidadInsumo, stockMinimo, stockMaximo, idRestaurante) =>{
-
+    console.log('Entrando al service') 
     const token = localStorage.getItem('token');
+    console.log('Token en actualizarInsumo:', token);
 
     const response = await axios.put(`${API_URL}/insumos/${id}`, {
         nombre: nombreInsumo,
