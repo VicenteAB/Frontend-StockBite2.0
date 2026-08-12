@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { obtenerInsumosPorRestaurante, obtenerRestaurantePorId } from "../services/restauranteDetalleService"
 import { guardarInsumoEnRestaurante, eliminarInsumo, actualizarInsumo } from "../services/insumoService"
@@ -8,7 +8,9 @@ import ModalActualizarInsumo from "../modals/ModalActualizarInsumo"
 import ModalConfirmarEliminar from "../modals/ModalConfirmarEliminar"
 
 
-export default function RestauranteDetalle({ }) {
+export default function RestauranteDetalle() {
+
+    const navigate = useNavigate()
 
     const { id } = useParams()
     const [insumosPorRestaurante, setInsumosPorRestaurante] = useState([])
@@ -97,13 +99,22 @@ export default function RestauranteDetalle({ }) {
         }
     }
 
+    const handleClick = () => {
+        navigate(`/restaurante/${restaurante.id}/recetas`)
+    }
+
     return (
         <div>
             <div className="text-lg text-white border-2 bg-gradient-to-r from-orange-500 to-red-600 rounded mt-6 p-6 ml-6 mr-6">
-                <h1 className="pt-4 text-2xl font-bold pl-6">{restaurante.nombre}</h1>
-                <h2 className="text-lg pt-4 pb-10 text-2xl font-bold pl-6">{restaurante.direccion}</h2>
-                <div className="">
-                    <button onClick={handleMostrarModal} className="cursor-pointer p-2 flex pl-6 mb-10 border-2 rounded w-1/6 justify-center">Agregar insumo</button>
+                <h1 className="mb-5 pt-4 text-2xl font-bold pl-6">Insumos de Restaurante</h1>
+
+                <div className="flex justify-between items-center px-6 py-4">
+                    <h1 className="text-2xl">{restaurante.nombre}, {restaurante.direccion}</h1>
+                    
+                    <div className="flex gap-6">
+                        <button onClick={handleMostrarModal} className="cursor-pointer p-2 border-2 rounded">Agregar insumo a este restaurante</button>
+                        <button onClick={handleClick} className="cursor-pointer p-2 border-2 rounded">Ver recetas de este restaurante</button>
+                    </div>
                 </div>
 
                 {/* Modal para agregar insumo (formulario) */}
@@ -114,7 +125,7 @@ export default function RestauranteDetalle({ }) {
                 />
 
                 {/* Tabla de insumos */}
-                <table className="w-full">
+                <table className="w-full mt-12">
                     <thead className="border-b-2 border-white">
                         <tr className="divide-x divide-white/30">
                             <th className="px-6 pb-2">Nombre insumo</th>

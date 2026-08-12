@@ -5,6 +5,7 @@ import Home from "./pages/Home"
 import Layout from './components/Layout'
 import Restaurante from './pages/RestauranteDetalle'
 import RestauranteDetalle from './pages/RestauranteDetalle'
+import Recetas from './pages/Recetas'
 
 function App() {
   return (
@@ -21,6 +22,12 @@ function App() {
             <RestauranteDetalle/>
           </Layout>
         } />
+        <Route path="/restaurante/:id/recetas" element={
+          <Layout>
+            <Recetas/>
+          </Layout>
+        }
+        />
       </Routes>
     </div>
   )
