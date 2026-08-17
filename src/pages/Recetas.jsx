@@ -9,10 +9,43 @@ export default function Receteas() {
     const { id } = useParams()
 
     const [restaurante, setRestaurante] = useState({})
+    const [recetas, setRecetas] = useState([])
+
+    const [insumosRestaurante, setInsumosRestaurante] = useState([])    
 
     useEffect(() => {
-        obtenerRestaurantePorId(id).then(data => setRestaurante(data))
-    },[])
+        // Como usamos await, necesitamos una función async adentro
+        const cargarDatos = async () => {
+            
+            // Paso 1: traer el restaurante
+            const dataRestaurante = await obtenerRestaurantePorId(id)
+            setRestaurante(dataRestaurante)
+
+            // Paso 2: traer las recetas
+            const dataRecetas = await obtenerRecetas()
+
+            //Para obtener el nombre de los inusmos
+            const dataInsumos = await obtenerInsumosPorRestaurante(id)
+
+            // Paso 3: por cada receta, traer sus insumos
+            const recetasConInsumos = await Promise.all(
+                dataRecetas.map(async (receta) => {
+                    const insumos = await obtenerInsumosPorReceta(receta.id)
+                    return { ...receta, insumos } // agrega insumos a la receta
+                })
+            )
+
+            // Paso 4: guardar todo en el estado
+            setRecetas(recetasConInsumos)
+
+            
+            setInsumosRestaurante(dataInsumos)
+            
+        }
+        cargarDatos() // llamamos la función
+    }, [])
+
+    console.log(recetas)
 
     return (
         <div>
@@ -30,18 +63,25 @@ export default function Receteas() {
                 {/* Tabla de insumos */}
                 <table className="w-full mt-12">
                     <thead className="border-b-2 border-white">
-                        <tr className="divide-x divide-white/30">
+                        
+                            <tr className="divide-x divide-white/30">
                             <th className="px-6 pb-2">Nombre receta</th>
                             <th className="px-6 pb-2">Ingredientes (gramos)</th>
-                        </tr>
+                        </tr>                              
+                        
                     </thead>
                     <tbody className="divide-y divide-white/30">
-                        {/** {insumosPorRestaurante.map(ir => ( */}
+                        {recetas.map(r =>(
                             <tr className="divide-x divide-white/30">
-                                <td className="px-6 py-2"></td>
-                                <td className="px-6 py-2"></td>
+                                <td className="px-6 py-2">{r.nombre}</td>
+                                <td className="px-6 py-2">
+                                    {r.insumos.map((ins) => {
+                                        const insumo = insumosRestaurante.find(i => i.id === ins.idInsumo)
+                                        return <p key={ins.id}>• {insumo?.nombre}: {ins.cantidad}g</p>
+                                    })}
+                                </td>
                             </tr>
-                        {/** ))} */}
+                        ))}
                     </tbody>
                 </table>
             </div>
