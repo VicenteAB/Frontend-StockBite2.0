@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom"
+import { useParams, useNavigate, Await } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { obtenerInsumosPorRestaurante, obtenerRestaurantePorId } from "../services/restauranteDetalleService"
 import { guardarInsumoEnRestaurante, eliminarInsumo, actualizarInsumo } from "../services/insumoService"
@@ -69,7 +69,7 @@ export default function RestauranteDetalle() {
         }
     }
 
-    const handleEliminarInsumo = async (insumoId) => {
+    const handleEliminarInsumo = async(insumoId) => {
         if (!insumoId) return;
 
         try {
