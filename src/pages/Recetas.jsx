@@ -60,10 +60,12 @@ export default function Recetas() {
             const recetaCreada = await crearReceta(nombreReceta)
 
             // Paso 2: agregar cada ingrediente
-            for (const ing of ingredientes) {
-                await agregarIngredienteAReceta(recetaCreada.id, ing.idInsumo, ing.cantidad)
-            }
-            
+            await Promise.all(
+                ingredientes.map(ing => 
+                    agregarIngredienteAReceta(recetaCreada.id, ing.idInsumo, ing.cantidad)
+                )
+            )
+
             // Paso 3: recargar las recetas
             const dataRecetas = await obtenerRecetas()
             const recetasConInsumos = await Promise.all(
